@@ -25,7 +25,6 @@ class MariaDbConnectionPoolTest {
         when(properties.host()).thenReturn("localhost");
         when(properties.port()).thenReturn(5432);
         when(properties.database()).thenReturn("dbName");
-        when(properties.schema()).thenReturn("schema");
         when(properties.username()).thenReturn("username");
         when(properties.password()).thenReturn("password");
     }
