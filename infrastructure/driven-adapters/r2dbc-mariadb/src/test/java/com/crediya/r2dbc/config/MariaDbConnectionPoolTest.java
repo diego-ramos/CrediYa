@@ -9,13 +9,13 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-class PostgreSQLConnectionPoolTest {
+class MariaDbConnectionPoolTest {
 
     @InjectMocks
-    private PostgreSQLConnectionPool connectionPool;
+    private MariaDbConnectionPool connectionPool;
 
     @Mock
-    private PostgresqlConnectionProperties properties;
+    private MariaDbConnectionProperties properties;
 
 
     @BeforeEach
