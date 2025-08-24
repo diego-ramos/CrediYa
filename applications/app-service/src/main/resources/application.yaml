@@ -1,17 +1,16 @@
-##Spring Configuration
 server:
   port: 8080
 spring:
   application:
-    name: CrediYa
+    name: "CrediYa"
   devtools:
     add-properties: false
   h2:
     console:
       enabled: true
-      path: /h2
+      path: "/h2"
   profiles:
-    include:
+    include: null
   adapters:
     mariadb:
       database: "crediya_autenticacion"
@@ -23,3 +22,14 @@ spring:
         initial-size: 12
         max-size: 15
         max-idle-time: 10
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
