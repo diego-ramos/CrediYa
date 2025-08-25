@@ -11,6 +11,9 @@ public enum TechnicalErrorMessage {
 
     USER_SAVE(
             "USR_ERR_001", "Error registering user", A_SYSTEM_FAILURE_OCCURRED
+    ),
+    USER_EMPTY(
+            "USR_ERR_002", "Repository returned empty", A_SYSTEM_FAILURE_OCCURRED
     );
 
     private final String code;
