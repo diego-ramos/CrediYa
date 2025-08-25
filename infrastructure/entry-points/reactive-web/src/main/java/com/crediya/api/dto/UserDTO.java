@@ -2,12 +2,12 @@ package com.crediya.api.dto;
 
 import com.crediya.model.role.Role;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Getter
-@AllArgsConstructor
+@Data
 public class UserDTO {
 
     private Integer idType;

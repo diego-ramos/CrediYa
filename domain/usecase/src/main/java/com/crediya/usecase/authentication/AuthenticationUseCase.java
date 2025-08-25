@@ -10,15 +10,7 @@ public class AuthenticationUseCase {
     private final UserRepository userRepository;
 
     public Mono<User> registerUser(User user){
+        System.out.println("User: "+user.toString());
         return userRepository.save(user);
     }
-
-//    private <T> Mono<T> getBusinessError(BusinessErrorMessage businessErrorMessage) {
-//        return Mono.error(getBusinessException(businessErrorMessage));
-//    }
-//
-//    private BusinessException getBusinessException(BusinessErrorMessage businessErrorMessage) {
-//        return new BusinessException(businessErrorMessage);
-//    }
-
 }
