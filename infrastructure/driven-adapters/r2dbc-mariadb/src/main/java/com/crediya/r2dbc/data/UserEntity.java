@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Data
 @Table("user")
-public class UserData implements Persistable<Long> {
+public class UserEntity implements Persistable<Long> {
 
     @Transient
     private boolean isNew = true; // default new

@@ -9,10 +9,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BusinessErrorMessage {
     SALARY_OUT_OF_RANGE(
-            "BUSS_ERR_001", "Salary out of range", A_SYSTEM_FAILURE_OCCURRED
-    );
+            "BUSS_ERR_001", "Salary out of range", VERIFY_YOUR_DATA
+    ),
+    INVALID_EMAIL(
+            "BUSS_ERR_002", "Email is invalid", VERIFY_YOUR_DATA
+    );;
 
     private final String code;
     private final String description;
     private final String message;
+
+    @Override
+    public String toString(){
+        return code + ": " + description + ": " + message;
+    }
 }
