@@ -14,6 +14,12 @@ public enum TechnicalErrorMessage {
     ),
     USER_EMPTY(
             "USR_ERR_002", "Repository returned empty", A_SYSTEM_FAILURE_OCCURRED
+    ),
+    USER_EMAIL_FIND(
+            "USR_ERR_003", "Error finding user by email", A_SYSTEM_FAILURE_OCCURRED
+    ),
+    USER_ID_FIND(
+            "USR_ERR_004", "Error finding user by id", A_SYSTEM_FAILURE_OCCURRED
     );
 
     private final String code;

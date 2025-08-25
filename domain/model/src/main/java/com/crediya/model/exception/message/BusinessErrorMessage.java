@@ -13,7 +13,13 @@ public enum BusinessErrorMessage {
     ),
     INVALID_EMAIL(
             "BUSS_ERR_002", "Email is invalid", VERIFY_YOUR_DATA
-    );;
+    ),
+    EMAIL_ALREADY_REGISTERED(
+            "BUSS_ERR_003", "Email already registered", VERIFY_YOUR_DATA
+    ),
+    ID_ALREADY_REGISTERED(
+            "BUSS_ERR_004", "Id already registered", VERIFY_YOUR_DATA
+    );
 
     private final String code;
     private final String description;

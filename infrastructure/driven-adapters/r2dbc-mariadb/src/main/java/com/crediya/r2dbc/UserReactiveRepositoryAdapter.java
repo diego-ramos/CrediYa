@@ -33,4 +33,20 @@ public class UserReactiveRepositoryAdapter  extends ReactiveAdapterOperations<
                 .map(this::toEntity)
                 .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_SAVE));
     }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return repository
+                .findFirstByEmail(email)       // returns Mono<UserEntity>
+                .map(this::toEntity)      // convert entity -> domain
+                .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_EMAIL_FIND));
+    }
+
+    @Override
+    public Mono<User> findByIdNumber(Integer idNumber) {
+        return repository
+                .findFirstByIdNumber(idNumber)       // returns Mono<UserEntity>
+                .map(this::toEntity)      // convert entity -> domain
+                .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_ID_FIND));
+    }
 }

@@ -4,9 +4,13 @@ import com.crediya.model.user.User;
 import com.crediya.model.exception.BusinessException;
 import com.crediya.model.exception.message.BusinessErrorMessage;
 import com.crediya.model.user.gateways.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -15,29 +19,36 @@ import static org.mockito.Mockito.*;
 
 class AuthenticationUseCaseTest {
 
+    @Mock
     private UserRepository userRepository;
+
+    @InjectMocks
     private AuthenticationUseCase authenticationUseCase;
 
     @BeforeEach
     void setUp() {
-        userRepository = Mockito.mock(UserRepository.class);
-        authenticationUseCase = new AuthenticationUseCase(userRepository);
+        MockitoAnnotations.openMocks(this);
     }
+
+    private final User validUser = User.builder()
+            .email("test@mail.com")
+            .baseSalary(1_000_000L)
+            .build();
 
     @Test
     void mustRegisterUserSuccessfully() {
-        User user = new User();
-        user.setBaseSalary(5_000_000L);
 
-        when(userRepository.save(any(User.class))).thenReturn(Mono.just(user));
+        when(userRepository.findByEmail(validUser.getEmail())).thenReturn(Mono.empty());
+        when(userRepository.findByIdNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.save(any(User.class))).thenReturn(Mono.just(validUser));
 
-        Mono<User> result = authenticationUseCase.registerUser(user);
+        Mono<User> result = authenticationUseCase.registerUser(validUser);
 
         StepVerifier.create(result)
-                .expectNextMatches(saved -> saved.getBaseSalary() == 5_000_000)
+                .expectNextMatches(saved -> saved.getBaseSalary() == 1_000_000L)
                 .verifyComplete();
 
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).save(validUser);
     }
 
     @Test
@@ -74,6 +85,59 @@ class AuthenticationUseCaseTest {
                 .verify();
 
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void mustFailWhenEmailAlreadyRegistered() {
+        // arrange
+        when(userRepository.findByEmail(validUser.getEmail())).thenReturn(Mono.just(validUser));
+        when(userRepository.findByIdNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
+
+        // act & assert
+        StepVerifier.create(authenticationUseCase.registerUser(validUser))
+                .expectErrorSatisfies(error -> {
+                    assert error instanceof BusinessException;
+                    BusinessException ex = (BusinessException) error;
+                    assert ex.getBusinessErrorMessage().equals(BusinessErrorMessage.EMAIL_ALREADY_REGISTERED);
+                })
+                .verify();
+    }
+
+    @Test
+    void mustFailWhenIdNumberAlreadyRegistered() {
+        User userWithId = validUser.toBuilder().idNumber(123456789).build();
+
+        when(userRepository.findByEmail(userWithId.getEmail()))
+                .thenReturn(Mono.empty());
+        when(userRepository.findByIdNumber(userWithId.getIdNumber()))
+                .thenReturn(Mono.just(userWithId));
+
+        StepVerifier.create(authenticationUseCase.registerUser(userWithId))
+                .expectErrorSatisfies(error -> {
+                    assert error instanceof BusinessException;
+                    BusinessException ex = (BusinessException) error;
+                    assert ex.getBusinessErrorMessage().equals(BusinessErrorMessage.ID_ALREADY_REGISTERED);
+                })
+                .verify();
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void mustRegisterUserWhenEmailAndIdNumberAreFree() {
+        User userWithId = validUser.toBuilder().idNumber(987654321).build();
+
+        when(userRepository.findByEmail(userWithId.getEmail())).thenReturn(Mono.empty());
+        when(userRepository.findByIdNumber(userWithId.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.save(any(User.class))).thenReturn(Mono.just(userWithId));
+
+        StepVerifier.create(authenticationUseCase.registerUser(userWithId))
+                .expectNextMatches(saved ->
+                        saved.getBaseSalary() == 1_000_000L &&
+                                saved.getIdNumber().equals(987654321))
+                .verifyComplete();
+
+        verify(userRepository, times(1)).save(userWithId);
     }
 }
 

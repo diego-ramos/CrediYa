@@ -72,4 +72,46 @@ class UserReactiveRepositoryAdapterTest {
         verify(mapper).map(user, UserEntity.class);
         verify(repository).save(entity);
     }
+
+    @Test
+    void findByEmail() {
+        User user = new User();
+        user.setIdNumber(123);
+
+        UserEntity entity = new UserEntity();
+        entity.setIdNumber(123);
+
+        when(repository.findFirstByEmail(any(String.class))).thenReturn(Mono.just(entity));
+        when(mapper.map(any(UserEntity.class), eq(User.class))).thenReturn(user);
+
+        Mono<User> result = repositoryAdapter.findByEmail("aa@aaa.com");
+
+        StepVerifier.create(result)
+                .expectNextMatches(value -> value.getIdNumber().equals(user.getIdNumber()))
+                .verifyComplete();
+
+        verify(repository).findFirstByEmail(any(String.class));
+        verify(mapper).map(entity, User.class);
+    }
+
+    @Test
+    void findByIdNumber() {
+        User user = new User();
+        user.setIdNumber(123);
+
+        UserEntity entity = new UserEntity();
+        entity.setIdNumber(123);
+
+        when(repository.findFirstByIdNumber(any(Integer.class))).thenReturn(Mono.just(entity));
+        when(mapper.map(any(UserEntity.class), eq(User.class))).thenReturn(user);
+
+        Mono<User> result = repositoryAdapter.findByIdNumber(123);
+
+        StepVerifier.create(result)
+                .expectNextMatches(value -> value.getIdNumber().equals(user.getIdNumber()))
+                .verifyComplete();
+
+        verify(repository).findFirstByIdNumber(any(Integer.class));
+        verify(mapper).map(entity, User.class);
+    }
 }

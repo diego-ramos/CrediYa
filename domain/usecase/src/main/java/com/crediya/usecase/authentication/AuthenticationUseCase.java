@@ -15,6 +15,25 @@ public class AuthenticationUseCase {
         if (user.getBaseSalary() < 0 || user.getBaseSalary() > 15000000) {
             return Mono.error(new BusinessException(BusinessErrorMessage.SALARY_OUT_OF_RANGE));
         }
-        return userRepository.save(user);
+        Mono<Boolean> emailExists = userRepository.findByEmail(user.getEmail())
+                .hasElement(); // true if user exists
+
+        Mono<Boolean> idExists = userRepository.findByIdNumber(user.getIdNumber())
+                .hasElement(); // true if id exists
+
+        return Mono.zip(emailExists, idExists)
+                .flatMap(tuple -> {
+                    boolean emailTaken = tuple.getT1();
+                    boolean idTaken = tuple.getT2();
+
+                    if (emailTaken) {
+                        return Mono.error(new BusinessException(BusinessErrorMessage.EMAIL_ALREADY_REGISTERED));
+                    }
+                    if (idTaken) {
+                        return Mono.error(new BusinessException(BusinessErrorMessage.ID_ALREADY_REGISTERED));
+                    }
+
+                    return userRepository.save(user);
+                });
     }
 }
