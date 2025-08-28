@@ -4,7 +4,6 @@ import com.crediya.model.user.User;
 import com.crediya.model.exception.BusinessException;
 import com.crediya.model.exception.message.BusinessErrorMessage;
 import com.crediya.model.user.gateways.UserRepository;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,7 +32,7 @@ class AuthenticationUseCaseTest {
 
     private final User validUser = User.builder()
             .email("test@mail.com")
-            .baseSalary(1_000_000L)
+            .baseSalary(BigDecimal.valueOf(1_000_000L))
             .build();
 
     @Test
@@ -44,7 +45,7 @@ class AuthenticationUseCaseTest {
         Mono<User> result = authenticationUseCase.registerUser(validUser);
 
         StepVerifier.create(result)
-                .expectNextMatches(saved -> saved.getBaseSalary() == 1_000_000L)
+                .expectNextMatches(saved -> saved.getBaseSalary().compareTo(BigDecimal.valueOf(1_000_000L)) == 0)
                 .verifyComplete();
 
         verify(userRepository, times(1)).save(validUser);
@@ -53,7 +54,7 @@ class AuthenticationUseCaseTest {
     @Test
     void mustFailWhenSalaryIsNegative() {
         User user = new User();
-        user.setBaseSalary(-1000L);
+        user.setBaseSalary(BigDecimal.valueOf(-1000L));
 
         Mono<User> result = authenticationUseCase.registerUser(user);
 
@@ -71,7 +72,7 @@ class AuthenticationUseCaseTest {
     @Test
     void mustFailWhenSalaryIsAboveLimit() {
         User user = new User();
-        user.setBaseSalary(20_000_000L);
+        user.setBaseSalary(BigDecimal.valueOf(20_000_000L));
 
         Mono<User> result = authenticationUseCase.registerUser(user);
 
@@ -132,7 +133,7 @@ class AuthenticationUseCaseTest {
 
         StepVerifier.create(authenticationUseCase.registerUser(userWithId))
                 .expectNextMatches(saved ->
-                        saved.getBaseSalary() == 1_000_000L &&
+                        saved.getBaseSalary().compareTo(BigDecimal.valueOf(1_000_000L)) == 0 &&
                                 saved.getIdentificationNumber().equals(987654321))
                 .verifyComplete();
 
