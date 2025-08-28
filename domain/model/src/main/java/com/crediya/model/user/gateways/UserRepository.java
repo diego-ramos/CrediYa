@@ -8,5 +8,5 @@ public interface UserRepository {
 
     Mono<User> findByEmail(String email);
 
-    Mono<User> findByIdNumber(Integer idNumber);
+    Mono<User> findByIdentificationNumber(Integer idNumber);
 }

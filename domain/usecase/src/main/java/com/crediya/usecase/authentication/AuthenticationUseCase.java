@@ -18,10 +18,10 @@ public class AuthenticationUseCase {
         Mono<Boolean> emailExists = userRepository.findByEmail(user.getEmail())
                 .hasElement(); // true if user exists
 
-        Mono<Boolean> idExists = userRepository.findByIdNumber(user.getIdNumber())
+        Mono<Boolean> identificationNumberExists = userRepository.findByIdentificationNumber(user.getIdNumber())
                 .hasElement(); // true if id exists
 
-        return Mono.zip(emailExists, idExists)
+        return Mono.zip(emailExists, identificationNumberExists)
                 .flatMap(tuple -> {
                     boolean emailTaken = tuple.getT1();
                     boolean idTaken = tuple.getT2();
@@ -30,7 +30,7 @@ public class AuthenticationUseCase {
                         return Mono.error(new BusinessException(BusinessErrorMessage.EMAIL_ALREADY_REGISTERED));
                     }
                     if (idTaken) {
-                        return Mono.error(new BusinessException(BusinessErrorMessage.ID_ALREADY_REGISTERED));
+                        return Mono.error(new BusinessException(BusinessErrorMessage.IDENTIFICATION_NUMBER_ALREADY_REGISTERED));
                     }
 
                     return userRepository.save(user);

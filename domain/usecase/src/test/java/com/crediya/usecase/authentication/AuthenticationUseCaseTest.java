@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -39,7 +38,7 @@ class AuthenticationUseCaseTest {
     void mustRegisterUserSuccessfully() {
 
         when(userRepository.findByEmail(validUser.getEmail())).thenReturn(Mono.empty());
-        when(userRepository.findByIdNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.findByIdentificationNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
         when(userRepository.save(any(User.class))).thenReturn(Mono.just(validUser));
 
         Mono<User> result = authenticationUseCase.registerUser(validUser);
@@ -91,7 +90,7 @@ class AuthenticationUseCaseTest {
     void mustFailWhenEmailAlreadyRegistered() {
         // arrange
         when(userRepository.findByEmail(validUser.getEmail())).thenReturn(Mono.just(validUser));
-        when(userRepository.findByIdNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.findByIdentificationNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
 
         // act & assert
         StepVerifier.create(authenticationUseCase.registerUser(validUser))
@@ -109,14 +108,14 @@ class AuthenticationUseCaseTest {
 
         when(userRepository.findByEmail(userWithId.getEmail()))
                 .thenReturn(Mono.empty());
-        when(userRepository.findByIdNumber(userWithId.getIdNumber()))
+        when(userRepository.findByIdentificationNumber(userWithId.getIdNumber()))
                 .thenReturn(Mono.just(userWithId));
 
         StepVerifier.create(authenticationUseCase.registerUser(userWithId))
                 .expectErrorSatisfies(error -> {
                     assert error instanceof BusinessException;
                     BusinessException ex = (BusinessException) error;
-                    assert ex.getBusinessErrorMessage().equals(BusinessErrorMessage.ID_ALREADY_REGISTERED);
+                    assert ex.getBusinessErrorMessage().equals(BusinessErrorMessage.IDENTIFICATION_NUMBER_ALREADY_REGISTERED);
                 })
                 .verify();
 
@@ -128,7 +127,7 @@ class AuthenticationUseCaseTest {
         User userWithId = validUser.toBuilder().idNumber(987654321).build();
 
         when(userRepository.findByEmail(userWithId.getEmail())).thenReturn(Mono.empty());
-        when(userRepository.findByIdNumber(userWithId.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.findByIdentificationNumber(userWithId.getIdNumber())).thenReturn(Mono.empty());
         when(userRepository.save(any(User.class))).thenReturn(Mono.just(userWithId));
 
         StepVerifier.create(authenticationUseCase.registerUser(userWithId))

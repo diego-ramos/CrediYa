@@ -105,7 +105,7 @@ class UserReactiveRepositoryAdapterTest {
         when(repository.findFirstByIdNumber(any(Integer.class))).thenReturn(Mono.just(entity));
         when(mapper.map(any(UserEntity.class), eq(User.class))).thenReturn(user);
 
-        Mono<User> result = repositoryAdapter.findByIdNumber(123);
+        Mono<User> result = repositoryAdapter.findByIdentificationNumber(123);
 
         StepVerifier.create(result)
                 .expectNextMatches(value -> value.getIdNumber().equals(user.getIdNumber()))

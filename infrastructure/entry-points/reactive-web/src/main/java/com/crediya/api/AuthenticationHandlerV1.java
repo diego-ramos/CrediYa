@@ -24,13 +24,13 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Endpoints relacionados con autenticación de usuarios")
+@Tag(name = "Authentication", description = "Endpoints related with user authentication")
 public class AuthenticationHandlerV1 {
     private final AuthenticationUseCase authenticationUseCase;
     private final AuthenticationMapper mapper;
     private final Validator validator;
 
-    @Operation(summary = "Registrar un usuario", description = "Crea un nuevo usuario en el sistema",
+    @Operation(summary = "Register a new user", description = "Creates a new user in the system",
             responses = {
             @ApiResponse(
                     responseCode = "200",
@@ -44,19 +44,19 @@ public class AuthenticationHandlerV1 {
     })
     public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
         return  serverRequest.bodyToMono(RegisterUserRequest.class)
-            .doOnNext(user -> log.info("Received registerUser request with user: {}", user))
+            .doOnNext(user -> log.info(Constants.USER_REGISTRATION_REQUEST_RECEIVED, user))
             .flatMap(dto -> {
                 var violations = validator.validate(dto);
                 if (!violations.isEmpty()) {
                     String errorMsg = violations.stream()
                             .map(ConstraintViolation::getMessage)
                             .reduce((a, b) -> a + "; " + b)
-                            .orElse("Invalid request");
+                            .orElse(Constants.INVALID_REQUEST);
                     return ServerResponse.badRequest().bodyValue(errorMsg);
                 }
                 return authenticationUseCase.registerUser(mapper.toModel(dto))
-                .doOnSuccess(saved -> log.info("User registered successfully: {}", saved))
-                .doOnError(e -> log.error("Error while registering user", e))
+                .doOnSuccess(saved -> log.info(Constants.USER_REGISTER_SUCCESS, saved))
+                .doOnError(e -> log.error(Constants.ERROR_REGISTERING_USER, e))
                 .flatMap(saved -> ServerResponse.ok().bodyValue(saved))
                 .onErrorResume(BusinessException.class, e ->ServerResponse.badRequest().bodyValue(e.getBusinessErrorMessage().toString()))
                 .onErrorResume(TechnicalException.class,

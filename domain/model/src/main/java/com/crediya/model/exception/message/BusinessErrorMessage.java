@@ -17,8 +17,8 @@ public enum BusinessErrorMessage {
     EMAIL_ALREADY_REGISTERED(
             "BUSS_ERR_003", "Email already registered", VERIFY_YOUR_DATA
     ),
-    ID_ALREADY_REGISTERED(
-            "BUSS_ERR_004", "Id already registered", VERIFY_YOUR_DATA
+    IDENTIFICATION_NUMBER_ALREADY_REGISTERED(
+            "BUSS_ERR_004", "Identification number already registered", VERIFY_YOUR_DATA
     );
 
     private final String code;
