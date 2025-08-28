@@ -1,6 +1,7 @@
 package com.crediya.api;
 
 import com.crediya.api.dto.RegisterUserRequest;
+import com.crediya.api.dto.IdentificationNumberRequest;
 import com.crediya.api.mapper.AuthenticationMapper;
 import com.crediya.model.exception.BusinessException;
 import com.crediya.model.exception.TechnicalException;
@@ -62,5 +63,34 @@ public class AuthenticationHandlerV1 {
                 .onErrorResume(TechnicalException.class,
                 e -> ServerResponse.status(500).bodyValue(e.getTechnicalErrorMessage().toString()));
             });
+    }
+
+    public Mono<ServerResponse> getUserByIdentificationNumber(ServerRequest serverRequest) {
+        int identificationNumber;
+
+        try {
+            identificationNumber = Integer.parseInt(serverRequest.pathVariable("identificationNumber"));
+        } catch (NumberFormatException e) {
+            return ServerResponse.badRequest()
+                    .bodyValue(Constants.IDENTIFICATION_NUMBER_MUST_BE_INTEGER);
+        }
+
+        return Mono.just(identificationNumber)
+                .doOnNext(idNumber -> log.info(Constants.USER_SEARCH_REQUEST_RECEIVED, idNumber))
+                .flatMap(idNumber -> authenticationUseCase.getUserByIdentificationNumber(idNumber)
+                        .doOnSuccess(user -> log.info(Constants.USER_SEARCH_SUCCESS, user))
+                        .doOnError(e -> log.error(Constants.ERROR_SEARCHING_USER, e))
+                        // If user found -> return 200
+                        .flatMap(user -> ServerResponse.ok().bodyValue(user))
+                        // If no user found -> return 404
+                        .switchIfEmpty(ServerResponse.status(404)
+                                .bodyValue(Constants.USER_NOT_FOUND+ idNumber))
+                        // Handle business error
+                        .onErrorResume(BusinessException.class,
+                                e -> ServerResponse.badRequest().bodyValue(e.getBusinessErrorMessage().toString()))
+                        // Handle technical error
+                        .onErrorResume(TechnicalException.class,
+                                e -> ServerResponse.status(500).bodyValue(e.getTechnicalErrorMessage().toString()))
+                );
     }
 }

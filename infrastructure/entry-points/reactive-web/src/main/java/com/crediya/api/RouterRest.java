@@ -45,7 +45,7 @@ public class RouterRest {
     public RouterFunction<ServerResponse> routerFunction(AuthenticationHandlerV1 authenticationHandlerV1, AuthenticationHandlerV2 authenticationHandlerV2) {
         return RouterFunctions
             .route()
-                .path("/api/v1", builder -> builder.POST("/usuarios/register", authenticationHandlerV1::registerUser))
+                .path("/api/v1", builder -> builder.POST("/usuarios/register", authenticationHandlerV1::registerUser).GET("/usuarios/identification-number/{identificationNumber}", authenticationHandlerV1::getUserByIdentificationNumber))
                 //.path("/api/v2", builder -> builder.GET("/usecase/path", handlerV2::listenGETUseCase).POST("/usecase/otherpath", handlerV2::listenPOSTUseCase).GET("/otherusercase/path", handlerV2::listenGETOtherUseCase))
             .build();
         }

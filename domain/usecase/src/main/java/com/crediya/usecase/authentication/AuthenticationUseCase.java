@@ -43,4 +43,12 @@ public class AuthenticationUseCase {
                     return userRepository.save(user);
                 });
     }
+
+    public Mono<User> getUserByIdentificationNumber(Integer identificationNumber){
+        return userRepository.findByIdentificationNumber(identificationNumber);
+    }
+
+    public Mono<User> getUserByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
 }
