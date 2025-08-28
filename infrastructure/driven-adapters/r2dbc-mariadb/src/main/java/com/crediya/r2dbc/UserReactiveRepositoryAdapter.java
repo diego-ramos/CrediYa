@@ -45,7 +45,7 @@ public class UserReactiveRepositoryAdapter  extends ReactiveAdapterOperations<
     @Override
     public Mono<User> findByIdentificationNumber(Integer idNumber) {
         return repository
-                .findFirstByIdNumber(idNumber)       // returns Mono<UserEntity>
+                .findFirstByIdentificationNumber(idNumber)       // returns Mono<UserEntity>
                 .map(this::toEntity)      // convert entity -> domain
                 .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_ID_FIND));
     }

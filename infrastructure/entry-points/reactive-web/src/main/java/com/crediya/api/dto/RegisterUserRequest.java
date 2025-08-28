@@ -1,5 +1,6 @@
 package com.crediya.api.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,8 +12,8 @@ import jakarta.validation.constraints.NotNull;
 public record RegisterUserRequest(
 
     @Schema(description = "User Identification Number", example = "79948037")
-    @NotNull(message = "Id number is required")
-    Integer idNumber,
+    @NotNull(message = "Identification number is required")
+    Integer identificationNumber,
 
     @Schema(description = "User first names", example = "Diego Alberto")
     @NotBlank(message = "Firsts names are required")
@@ -28,7 +29,7 @@ public record RegisterUserRequest(
 
     @Schema(description = "User Base Salary", example = "1000000")
     @NotNull(message = "Base Salary is required")
-    Long baseSalary,
+    BigDecimal baseSalary,
 
     @Schema(description = "User Base Salary", example = "3113562536")
     String phone,

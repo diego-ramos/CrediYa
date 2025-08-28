@@ -38,7 +38,7 @@ class AuthenticationUseCaseTest {
     void mustRegisterUserSuccessfully() {
 
         when(userRepository.findByEmail(validUser.getEmail())).thenReturn(Mono.empty());
-        when(userRepository.findByIdentificationNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.findByIdentificationNumber(validUser.getIdentificationNumber())).thenReturn(Mono.empty());
         when(userRepository.save(any(User.class))).thenReturn(Mono.just(validUser));
 
         Mono<User> result = authenticationUseCase.registerUser(validUser);
@@ -90,7 +90,7 @@ class AuthenticationUseCaseTest {
     void mustFailWhenEmailAlreadyRegistered() {
         // arrange
         when(userRepository.findByEmail(validUser.getEmail())).thenReturn(Mono.just(validUser));
-        when(userRepository.findByIdentificationNumber(validUser.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.findByIdentificationNumber(validUser.getIdentificationNumber())).thenReturn(Mono.empty());
 
         // act & assert
         StepVerifier.create(authenticationUseCase.registerUser(validUser))
@@ -104,11 +104,11 @@ class AuthenticationUseCaseTest {
 
     @Test
     void mustFailWhenIdNumberAlreadyRegistered() {
-        User userWithId = validUser.toBuilder().idNumber(123456789).build();
+        User userWithId = validUser.toBuilder().identificationNumber(123456789).build();
 
         when(userRepository.findByEmail(userWithId.getEmail()))
                 .thenReturn(Mono.empty());
-        when(userRepository.findByIdentificationNumber(userWithId.getIdNumber()))
+        when(userRepository.findByIdentificationNumber(userWithId.getIdentificationNumber()))
                 .thenReturn(Mono.just(userWithId));
 
         StepVerifier.create(authenticationUseCase.registerUser(userWithId))
@@ -124,16 +124,16 @@ class AuthenticationUseCaseTest {
 
     @Test
     void mustRegisterUserWhenEmailAndIdNumberAreFree() {
-        User userWithId = validUser.toBuilder().idNumber(987654321).build();
+        User userWithId = validUser.toBuilder().identificationNumber(987654321).build();
 
         when(userRepository.findByEmail(userWithId.getEmail())).thenReturn(Mono.empty());
-        when(userRepository.findByIdentificationNumber(userWithId.getIdNumber())).thenReturn(Mono.empty());
+        when(userRepository.findByIdentificationNumber(userWithId.getIdentificationNumber())).thenReturn(Mono.empty());
         when(userRepository.save(any(User.class))).thenReturn(Mono.just(userWithId));
 
         StepVerifier.create(authenticationUseCase.registerUser(userWithId))
                 .expectNextMatches(saved ->
                         saved.getBaseSalary() == 1_000_000L &&
-                                saved.getIdNumber().equals(987654321))
+                                saved.getIdentificationNumber().equals(987654321))
                 .verifyComplete();
 
         verify(userRepository, times(1)).save(userWithId);

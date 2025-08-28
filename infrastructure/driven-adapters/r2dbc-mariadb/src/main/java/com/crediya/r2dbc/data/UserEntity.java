@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -18,7 +19,7 @@ public class UserEntity implements Persistable<Long> {
 
     @Id
     @Column("idNumber")
-    private Integer idNumber;
+    private Integer identificationNumber;
 
     @Column("idType")
     private Integer idType;
@@ -36,7 +37,7 @@ public class UserEntity implements Persistable<Long> {
     private String phone;
 
     @Column("baseSalary")
-    private Long baseSalary;
+    private BigDecimal baseSalary;
 
     @Column("birthDate")
     private LocalDate birthDate;
@@ -49,7 +50,7 @@ public class UserEntity implements Persistable<Long> {
 
     @Override
     public Long getId() {
-        return Long.valueOf(idNumber);
+        return Long.valueOf(identificationNumber);
     }
 
     @Override

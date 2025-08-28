@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -38,7 +39,7 @@ class RouterRestTest {
                 "Diego Alberto",
                 "Ramos Patarroyo",
                 "darp@test.com",
-                1_000_000L,
+                BigDecimal.valueOf(1_000_000),
                 "3113562536",
                 LocalDate.of(1978, 6, 22),
                 "Calle 3 26 #33-45"
@@ -67,7 +68,7 @@ class RouterRestTest {
                 "Diego Alberto",
                 "Ramos Patarroyo",
                 "darp@test.com",
-                1_000_000_000_000L,
+                BigDecimal.valueOf(1_000_000_000_000L),
                 "3113562536",
                 LocalDate.of(1978, 6, 22),
                 "Calle 3 26 #33-45"
@@ -75,7 +76,7 @@ class RouterRestTest {
 
         User user = new User();
         user.setEmail("test@test.com");
-        user.setBaseSalary(1_000_000_000_000L);
+        user.setBaseSalary(BigDecimal.valueOf(1_000_000_000_000L));
 
         Mockito.when(authenticationUseCase.registerUser(Mockito.any()))
                 .thenReturn(Mono.just(user));
@@ -96,7 +97,7 @@ class RouterRestTest {
                 "Diego Alberto",
                 "Ramos Patarroyo",
                 "darptest.com", // Invalid
-                1_000_000L,
+                BigDecimal.valueOf(1_000_000L),
                 "3113562536",
                 LocalDate.of(1978, 6, 22),
                 "Calle 3 26 #33-45"
@@ -120,7 +121,7 @@ class RouterRestTest {
                 "",
                 "Ramos Patarroyo",
                 "darp@test.com",
-                1_000_000L,
+                BigDecimal.valueOf(1_000_000L),
                 "3113562536",
                 LocalDate.of(1978, 6, 22),
                 "Calle 3 26 #33-45"
@@ -144,7 +145,7 @@ class RouterRestTest {
                 "AAA",
                 "",
                 "darp@test.com",
-                1_000_000L,
+                BigDecimal.valueOf(1_000_000L),
                 "3113562536",
                 LocalDate.of(1978, 6, 22),
                 "Calle 3 26 #33-45"
@@ -167,7 +168,7 @@ class RouterRestTest {
                 "AAA",
                 "",
                 "darp@test.com",
-                1_000_000L,
+                BigDecimal.valueOf(1_000_000L),
                 "3113562536",
                 LocalDate.of(1978, 6, 22),
                 "Calle 3 26 #33-45"
@@ -181,7 +182,7 @@ class RouterRestTest {
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(String.class)
-                .value(body -> assertThat(body).contains("Id number is required"));
+                .value(body -> assertThat(body).contains("Identification number is required"));
     }
 
     @Test

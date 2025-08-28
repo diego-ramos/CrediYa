@@ -2,6 +2,7 @@ package com.crediya.model.user;
 import com.crediya.model.role.Role;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -11,12 +12,12 @@ import java.time.LocalDate;
 public class User {
 
     private Integer idType;
-    private Integer idNumber;
+    private Integer identificationNumber;
     private String firstNames;
     private String lastNames;
     private String email ;
     private String phone;
-    private Long baseSalary;
+    private BigDecimal baseSalary;
     private LocalDate birthDate;
     private String address;
     private Role role;
