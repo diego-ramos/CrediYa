@@ -1,5 +1,6 @@
 package com.crediya.api.config;
 
+import com.crediya.api.security.CustomJwtAuthenticationConverter;
 import com.crediya.api.security.JwtService;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,9 @@ import javax.crypto.SecretKey;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+    private static final String ADMIN_ROLE = "ADMINISTRADOR";
+    private static final String CUSTOMER_ROLE = "CLIENTE";
+    private static final String REPRESENTATIVE_ROLE = "ASESOR";
 
     private final JwtService jwtService;
 
@@ -29,11 +33,12 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/v*/usuarios/login", "/api/v*/usuarios/identification-number/*").permitAll()
+                        .pathMatchers("/api/v*/usuarios/login").permitAll()
+                        .pathMatchers("/api/v*/usuarios/register").hasAnyRole(ADMIN_ROLE, REPRESENTATIVE_ROLE) // ✅ role-based restriction
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtDecoder(jwtDecoder())) // ✅ now reactive
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(new CustomJwtAuthenticationConverter()))
                 )
                 .build();
     }
