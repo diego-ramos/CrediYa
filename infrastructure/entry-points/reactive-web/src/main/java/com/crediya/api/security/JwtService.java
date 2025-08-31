@@ -4,6 +4,8 @@ import com.crediya.model.jwtprovider.JwtProvider;
 import com.crediya.model.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -12,7 +14,8 @@ import java.util.Date;
 @Service
 public class JwtService implements JwtProvider {
 
-    private final SecretKey key = io.jsonwebtoken.security.Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${spring.security.oauth2.resourceserver.jwt.secret}")
+    private String jwtSecret;
 
     @Override
     public String generateToken(User user) {
@@ -21,12 +24,12 @@ public class JwtService implements JwtProvider {
                 .claim("roles", user.getRole().getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(key)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public SecretKey getSigningKey() {
-        return key;
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 }
 
