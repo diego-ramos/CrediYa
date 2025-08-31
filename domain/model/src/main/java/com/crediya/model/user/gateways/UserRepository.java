@@ -9,4 +9,6 @@ public interface UserRepository {
     Mono<User> findByEmail(String email);
 
     Mono<User> findByIdentificationNumber(Integer idNumber);
+
+    Mono<User> findByEmailAndPassword(String email, String password);
 }

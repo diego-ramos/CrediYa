@@ -14,4 +14,8 @@ public final class Constants {
     public static final String USER_SEARCH_SUCCESS = "User searching successfully: {}";
     public static final String IDENTIFICATION_NUMBER_MUST_BE_INTEGER = "User identification number must be an integer";
     public static final String USER_NOT_FOUND = "User not found: ";
+    public static final String LOGIN_REQUEST_RECEIVED = "Login request received for user: {}";
+    public static final String LOGIN_SUCCESSFULLY= "Login successfully: {}";
+    public static final String ERROR_LOGIN_USER = "Error while login user";
+
 }

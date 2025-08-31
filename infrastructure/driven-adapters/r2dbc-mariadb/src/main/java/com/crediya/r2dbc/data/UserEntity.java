@@ -48,6 +48,9 @@ public class UserEntity implements Persistable<Long> {
     @Column("roleId")
     private Integer roleId;
 
+    @Column("password")
+    private String password;
+
     @Override
     public Long getId() {
         return Long.valueOf(identificationNumber);

@@ -1,5 +1,6 @@
 package com.crediya.api;
 
+import com.crediya.api.dto.LoginRequest;
 import com.crediya.api.dto.RegisterUserRequest;
 import com.crediya.api.dto.IdentificationNumberRequest;
 import com.crediya.api.mapper.AuthenticationMapper;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 
 @Slf4j
@@ -92,5 +95,29 @@ public class AuthenticationHandlerV1 {
                         .onErrorResume(TechnicalException.class,
                                 e -> ServerResponse.status(500).bodyValue(e.getTechnicalErrorMessage().toString()))
                 );
+    }
+
+    public Mono<ServerResponse> login(ServerRequest serverRequest) {
+        return  serverRequest.bodyToMono(LoginRequest.class)
+                .doOnNext(login -> log.info(Constants.LOGIN_REQUEST_RECEIVED, login.email()))
+                .flatMap(dto -> {
+                    var violations = validator.validate(dto);
+                    if (!violations.isEmpty()) {
+                        String errorMsg = violations.stream()
+                                .map(ConstraintViolation::getMessage)
+                                .reduce((a, b) -> a + "; " + b)
+                                .orElse(Constants.INVALID_REQUEST);
+                        return ServerResponse.badRequest().bodyValue(errorMsg);
+                    }
+                    return authenticationUseCase.login(dto.email(), dto.password())
+                            .doOnSuccess(user -> log.info(Constants.LOGIN_SUCCESSFULLY, user))
+                            .doOnError(e -> log.error(Constants.ERROR_LOGIN_USER, e))
+                            .flatMap(auth -> ServerResponse.ok().bodyValue(auth))
+                            .switchIfEmpty(ServerResponse.status(404)
+                                    .bodyValue(Constants.USER_NOT_FOUND+ dto.email()))
+                            .onErrorResume(BusinessException.class, e ->ServerResponse.badRequest().bodyValue(e.getBusinessErrorMessage().toString()))
+                            .onErrorResume(TechnicalException.class,
+                                    e -> ServerResponse.status(500).bodyValue(e.getTechnicalErrorMessage().toString()));
+                });
     }
 }

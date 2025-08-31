@@ -9,4 +9,6 @@ public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntit
     Mono<UserEntity> findFirstByEmail(String email);
 
     Mono<UserEntity> findFirstByIdentificationNumber(Integer identificationNumber);
+
+    Mono<UserEntity> findFirstByEmailAndPassword(String email, String password);
 }

@@ -49,4 +49,12 @@ public class UserReactiveRepositoryAdapter  extends ReactiveAdapterOperations<
                 .map(this::toEntity)      // convert entity -> domain
                 .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_ID_FIND));
     }
+
+    @Override
+    public Mono<User> findByEmailAndPassword(String email, String password) {
+        return repository
+                .findFirstByEmailAndPassword(email, password)
+                .map(this::toEntity)
+                .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_ID_FIND));
+    }
 }

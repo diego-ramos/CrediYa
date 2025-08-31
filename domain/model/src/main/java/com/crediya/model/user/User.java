@@ -20,6 +20,7 @@ public class User {
     private BigDecimal baseSalary;
     private LocalDate birthDate;
     private String address;
+    private Integer roleId;
     private Role role;
-
+    private String password;
 }

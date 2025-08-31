@@ -20,6 +20,12 @@ public enum TechnicalErrorMessage {
     ),
     USER_ID_FIND(
             "USR_ERR_004", "Error finding user by id", A_SYSTEM_FAILURE_OCCURRED
+    ),
+    ERROR_LOGIN_USER(
+            "USR_ERR_005", "Error login user id", A_SYSTEM_FAILURE_OCCURRED
+    ),
+    USER_ROLE_FIND(
+            "USR_ERR_006", "Error finding user role", A_SYSTEM_FAILURE_OCCURRED
     );
 
     private final String code;

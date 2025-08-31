@@ -1,7 +1,12 @@
 package com.crediya.usecase.authentication;
 
 import com.crediya.model.exception.BusinessException;
+import com.crediya.model.exception.TechnicalException;
 import com.crediya.model.exception.message.BusinessErrorMessage;
+import com.crediya.model.exception.message.TechnicalErrorMessage;
+import com.crediya.model.jwtprovider.JwtProvider;
+import com.crediya.model.role.gateways.RoleRepository;
+import com.crediya.model.user.AuthResponse;
 import com.crediya.model.user.User;
 import com.crediya.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +21,8 @@ public class AuthenticationUseCase {
     private static final BigDecimal MAX_SALARY = new BigDecimal("15000000");
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final JwtProvider jwtProvider;
 
     public Mono<User> registerUser(User user){
         if (user.getBaseSalary().compareTo(MIN_SALARY) < 0 ||
@@ -50,5 +57,27 @@ public class AuthenticationUseCase {
 
     public Mono<User> getUserByEmail(String email){
         return userRepository.findByEmail(email);
+    }
+
+    public Mono<AuthResponse> login(String email, String password) {
+        return userRepository.findByEmailAndPassword(email, password)
+                .switchIfEmpty(Mono.error(new TechnicalException(
+                        new RuntimeException("Invalid credentials"),
+                        TechnicalErrorMessage.ERROR_LOGIN_USER
+                )))
+                .flatMap(user ->
+                    roleRepository.findById(user.getRoleId()) // or findById(user.getRoleId())
+                        .map(role -> {
+                            user.setRole(role); // enrich user with role
+                            String token = jwtProvider.generateToken(user);
+                            return new AuthResponse(token, user.getEmail(), role.getName());
+                        })
+                )
+                .onErrorMap(e -> {
+                    if (e instanceof TechnicalException) {
+                        return e; // already your custom exception
+                    }
+                    return new TechnicalException(e, TechnicalErrorMessage.ERROR_LOGIN_USER);
+                });
     }
 }
