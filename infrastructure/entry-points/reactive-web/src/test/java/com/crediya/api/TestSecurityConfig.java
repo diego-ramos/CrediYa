@@ -20,7 +20,6 @@ public class TestSecurityConfig {
                         .pathMatchers("/api/v*/usuarios/identification-number/*").authenticated()
                         .pathMatchers("/api/v*/usuarios/register").hasAnyRole(ADMIN_ROLE, REPRESENTATIVE_ROLE) // ✅ role-based restriction
                 )
-                .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt) // enable JWT mock support
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
         return http.build();
     }
