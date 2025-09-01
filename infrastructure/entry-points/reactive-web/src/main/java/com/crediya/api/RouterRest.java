@@ -1,5 +1,6 @@
 package com.crediya.api;
 
+import com.crediya.api.dto.LoginRequest;
 import com.crediya.api.dto.RegisterUserRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,6 +37,27 @@ public class RouterRest {
                             ),
                             responses = {
                                     @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente"),
+                                    @ApiResponse(responseCode = "400", description = "Error de validación"),
+                                    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/usuarios/login",
+                    produces = { MediaType.APPLICATION_JSON_VALUE },
+                    method = RequestMethod.POST,
+                    beanClass = AuthenticationHandlerV1.class,
+                    beanMethod = "login",
+                    operation = @Operation(
+                            operationId = "login",
+                            summary = "User Login",
+                            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                    required = true,
+                                    description = "Login user data",
+                                    content = @Content(schema = @Schema(implementation = LoginRequest.class))
+                            ),
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "User Authenticated"),
                                     @ApiResponse(responseCode = "400", description = "Error de validación"),
                                     @ApiResponse(responseCode = "500", description = "Error interno del servidor")
                             }

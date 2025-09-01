@@ -19,6 +19,9 @@ public enum BusinessErrorMessage {
     ),
     IDENTIFICATION_NUMBER_ALREADY_REGISTERED(
             "BUSS_ERR_004", "Identification number already registered", VERIFY_YOUR_DATA
+    ),
+    ERROR_LOGIN_USER(
+            "BUSS_ERR_005", "Error login user", VERIFY_YOUR_DATA
     );
 
     private final String code;

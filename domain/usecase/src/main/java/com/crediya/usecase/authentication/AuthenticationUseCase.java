@@ -61,9 +61,8 @@ public class AuthenticationUseCase {
 
     public Mono<AuthResponse> login(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password)
-                .switchIfEmpty(Mono.error(new TechnicalException(
-                        new RuntimeException("Invalid credentials"),
-                        TechnicalErrorMessage.ERROR_LOGIN_USER
+                .switchIfEmpty(Mono.error(new BusinessException(
+                        BusinessErrorMessage.ERROR_LOGIN_USER
                 )))
                 .flatMap(user ->
                     roleRepository.findById(user.getRoleId()) // or findById(user.getRoleId())
@@ -72,9 +71,6 @@ public class AuthenticationUseCase {
                             String token = jwtProvider.generateToken(user);
                             return new AuthResponse(token, user.getEmail(), role.getName());
                         })
-                )
-                .onErrorMap(e ->
-                    new TechnicalException(e, TechnicalErrorMessage.ERROR_LOGIN_USER)
                 );
     }
 }

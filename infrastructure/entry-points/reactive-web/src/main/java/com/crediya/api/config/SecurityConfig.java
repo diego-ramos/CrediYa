@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/v*/usuarios/login").permitAll()
+                        .pathMatchers("/webjars/swagger-ui/*").permitAll()
+                        .pathMatchers("/v3/api-docs/*").permitAll()
                         .pathMatchers("/api/v*/usuarios/identification-number/*").authenticated()
                         .pathMatchers("/api/v*/usuarios/register").hasAnyRole(ADMIN_ROLE, REPRESENTATIVE_ROLE) // ✅ role-based restriction
                         .anyExchange().authenticated()
