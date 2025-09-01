@@ -73,11 +73,8 @@ public class AuthenticationUseCase {
                             return new AuthResponse(token, user.getEmail(), role.getName());
                         })
                 )
-                .onErrorMap(e -> {
-                    if (e instanceof TechnicalException) {
-                        return e; // already your custom exception
-                    }
-                    return new TechnicalException(e, TechnicalErrorMessage.ERROR_LOGIN_USER);
-                });
+                .onErrorMap(e ->
+                    new TechnicalException(e, TechnicalErrorMessage.ERROR_LOGIN_USER)
+                );
     }
 }

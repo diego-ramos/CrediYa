@@ -1,5 +1,11 @@
 package com.crediya.usecase.authentication;
 
+import com.crediya.model.exception.TechnicalException;
+import com.crediya.model.exception.message.TechnicalErrorMessage;
+import com.crediya.model.jwtprovider.JwtProvider;
+import com.crediya.model.role.Role;
+import com.crediya.model.role.gateways.RoleRepository;
+import com.crediya.model.user.AuthResponse;
 import com.crediya.model.user.User;
 import com.crediya.model.exception.BusinessException;
 import com.crediya.model.exception.message.BusinessErrorMessage;
@@ -14,6 +20,7 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -21,6 +28,12 @@ class AuthenticationUseCaseTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
+    private JwtProvider jwtProvider;
 
     @InjectMocks
     private AuthenticationUseCase authenticationUseCase;
@@ -139,5 +152,79 @@ class AuthenticationUseCaseTest {
 
         verify(userRepository, times(1)).save(userWithId);
     }
+
+    @Test
+    void mustGetUserByIdentificationNumber() {
+
+        User userWithId = validUser.toBuilder().identificationNumber(123).build(); // match the test input
+
+        when(userRepository.findByIdentificationNumber(123))
+                .thenReturn(Mono.just(userWithId));
+
+        Mono<User> result = authenticationUseCase.getUserByIdentificationNumber(123);
+
+        StepVerifier.create(result)
+                .expectNextMatches(user -> user.getBaseSalary().compareTo(BigDecimal.valueOf(1_000_000L)) == 0)
+                .verifyComplete();
+
+        verify(userRepository, times(1)).findByIdentificationNumber(123);
+    }
+
+    @Test
+    void mustLogin() {
+        User userWithId = validUser.toBuilder().identificationNumber(987654321).roleId(1).build();
+        Role role = new Role();
+        role.setId(1);
+        role.setName("ADMIN");
+
+        when(userRepository.findByEmailAndPassword(userWithId.getEmail(), "123"))
+                .thenReturn(Mono.just(userWithId));
+        when(roleRepository.findById(userWithId.getRoleId()))
+                .thenReturn(Mono.just(role));
+        when(jwtProvider.generateToken(any(User.class)))
+                .thenReturn("mocked-jwt-token");
+
+        StepVerifier.create(authenticationUseCase.login(userWithId.getEmail(), "123"))
+                .expectNextMatches(auth -> auth.getUsername().equals(userWithId.getEmail()))
+                .verifyComplete();
+    }
+
+//    @Test
+//    void login_shouldReturnTechnicalException_whenJwtProviderIsNull() {
+//        User userWithId = validUser.toBuilder()
+//                .identificationNumber(987654321)
+//                .roleId(1)
+//                .build();
+//
+//        Role role = new Role();
+//        role.setId(1);
+//        role.setName("ADMIN");
+//
+//        // Mock repositories to return a valid user and role
+//        when(userRepository.findByEmailAndPassword(userWithId.getEmail(), "123"))
+//                .thenReturn(Mono.just(userWithId));
+//        when(roleRepository.findById(userWithId.getRoleId()))
+//                .thenReturn(Mono.just(role));
+//
+//        // Simulate JwtProvider throwing NullPointerException
+//        when(jwtProvider.generateToken(any(User.class)))
+//                .thenAnswer(invocation -> { throw new NullPointerException("jwtProvider is null"); });
+//
+//        // Call the method
+//        Mono<AuthResponse> result = authenticationUseCase.login(userWithId.getEmail(), "123");
+//
+//        // Verify that the TechnicalException is propagated
+//        StepVerifier.create(authenticationUseCase.login(userWithId.getEmail(), "123"))
+//                .expectErrorMatches(throwable ->
+//                        throwable instanceof TechnicalException &&
+//                                throwable.getMessage().contains("ERROR_LOGIN_USER") &&
+//                                throwable.getCause() instanceof NullPointerException
+//                )
+//                .verify();
+//
+//        verify(userRepository, times(1)).findByEmailAndPassword(userWithId.getEmail(), "123");
+//        verify(roleRepository, times(1)).findById(userWithId.getRoleId());
+//        verify(jwtProvider, times(1)).generateToken(any(User.class));
+//    }
 }
 

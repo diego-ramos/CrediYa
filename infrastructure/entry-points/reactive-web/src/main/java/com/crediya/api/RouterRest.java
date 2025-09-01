@@ -42,7 +42,7 @@ public class RouterRest {
                     )
             )
     })
-    public RouterFunction<ServerResponse> routerFunction(AuthenticationHandlerV1 authenticationHandlerV1, AuthenticationHandlerV2 authenticationHandlerV2) {
+    public RouterFunction<ServerResponse> routerFunction(AuthenticationHandlerV1 authenticationHandlerV1) {
         return RouterFunctions
             .route()
                 .path("/api/v1", builder -> builder
