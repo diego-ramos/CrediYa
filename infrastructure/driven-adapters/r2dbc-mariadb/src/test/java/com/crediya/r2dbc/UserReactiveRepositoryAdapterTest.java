@@ -114,4 +114,25 @@ class UserReactiveRepositoryAdapterTest {
         verify(repository).findFirstByIdentificationNumber(any(Integer.class));
         verify(mapper).map(entity, User.class);
     }
+
+    @Test
+    void findByEmailAndPassword() {
+        User user = new User();
+        user.setIdentificationNumber(123);
+
+        UserEntity entity = new UserEntity();
+        entity.setIdentificationNumber(123);
+
+        when(repository.findFirstByEmailAndPassword(anyString(), anyString())).thenReturn(Mono.just(entity));
+        when(mapper.map(any(UserEntity.class), eq(User.class))).thenReturn(user);
+
+        Mono<User> result = repositoryAdapter.findByEmailAndPassword("aa@aaa.com", "123");
+
+        StepVerifier.create(result)
+                .expectNextMatches(value -> value.getIdentificationNumber().equals(user.getIdentificationNumber()))
+                .verifyComplete();
+
+        verify(repository).findFirstByEmailAndPassword(anyString(), anyString());
+        verify(mapper).map(entity, User.class);
+    }
 }

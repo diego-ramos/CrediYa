@@ -182,49 +182,10 @@ class AuthenticationUseCaseTest {
         when(roleRepository.findById(userWithId.getRoleId()))
                 .thenReturn(Mono.just(role));
         when(jwtProvider.generateToken(any(User.class)))
-                .thenReturn("mocked-jwt-token");
+                .thenReturn(Mono.just("mocked-jwt-token"));
 
         StepVerifier.create(authenticationUseCase.login(userWithId.getEmail(), "123"))
                 .expectNextMatches(auth -> auth.getUsername().equals(userWithId.getEmail()))
                 .verifyComplete();
     }
-
-//    @Test
-//    void login_shouldReturnTechnicalException_whenJwtProviderIsNull() {
-//        User userWithId = validUser.toBuilder()
-//                .identificationNumber(987654321)
-//                .roleId(1)
-//                .build();
-//
-//        Role role = new Role();
-//        role.setId(1);
-//        role.setName("ADMIN");
-//
-//        // Mock repositories to return a valid user and role
-//        when(userRepository.findByEmailAndPassword(userWithId.getEmail(), "123"))
-//                .thenReturn(Mono.just(userWithId));
-//        when(roleRepository.findById(userWithId.getRoleId()))
-//                .thenReturn(Mono.just(role));
-//
-//        // Simulate JwtProvider throwing NullPointerException
-//        when(jwtProvider.generateToken(any(User.class)))
-//                .thenAnswer(invocation -> { throw new NullPointerException("jwtProvider is null"); });
-//
-//        // Call the method
-//        Mono<AuthResponse> result = authenticationUseCase.login(userWithId.getEmail(), "123");
-//
-//        // Verify that the TechnicalException is propagated
-//        StepVerifier.create(authenticationUseCase.login(userWithId.getEmail(), "123"))
-//                .expectErrorMatches(throwable ->
-//                        throwable instanceof TechnicalException &&
-//                                throwable.getMessage().contains("ERROR_LOGIN_USER") &&
-//                                throwable.getCause() instanceof NullPointerException
-//                )
-//                .verify();
-//
-//        verify(userRepository, times(1)).findByEmailAndPassword(userWithId.getEmail(), "123");
-//        verify(roleRepository, times(1)).findById(userWithId.getRoleId());
-//        verify(jwtProvider, times(1)).generateToken(any(User.class));
-//    }
 }
-

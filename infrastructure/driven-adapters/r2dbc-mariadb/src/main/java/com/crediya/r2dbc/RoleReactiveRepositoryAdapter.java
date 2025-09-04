@@ -4,7 +4,6 @@ import com.crediya.model.exception.TechnicalException;
 import com.crediya.model.exception.message.TechnicalErrorMessage;
 import com.crediya.model.role.Role;
 import com.crediya.model.role.gateways.RoleRepository;
-import com.crediya.model.user.User;
 import com.crediya.r2dbc.data.RoleEntity;
 import com.crediya.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
