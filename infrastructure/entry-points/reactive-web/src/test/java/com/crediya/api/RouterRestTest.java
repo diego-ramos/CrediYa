@@ -1,6 +1,5 @@
 package com.crediya.api;
 
-import com.crediya.api.dto.IdentificationNumberRequest;
 import com.crediya.api.dto.LoginRequest;
 import com.crediya.api.dto.RegisterUserRequest;
 import com.crediya.api.mapper.AuthenticationMapper;
