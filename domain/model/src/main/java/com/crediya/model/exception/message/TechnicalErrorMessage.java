@@ -26,6 +26,9 @@ public enum TechnicalErrorMessage {
     ),
     USER_ROLE_FIND(
             "USR_ERR_006", "Error finding user role", A_SYSTEM_FAILURE_OCCURRED
+    ),
+    PERMISSION_BY_SERVER_ID_FIND(
+            "SOL_ERR_007", "Error finding permission by server id", A_SYSTEM_FAILURE_OCCURRED
     );
 
     private final String code;

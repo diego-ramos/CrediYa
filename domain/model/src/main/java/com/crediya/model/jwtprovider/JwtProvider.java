@@ -1,7 +1,8 @@
 package com.crediya.model.jwtprovider;
 
 import com.crediya.model.user.User;
+import reactor.core.publisher.Mono;
 
 public interface JwtProvider {
-    String generateToken(User user);
+    Mono<String> generateToken(User user);
 }

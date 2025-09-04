@@ -1,9 +1,7 @@
 package com.crediya.usecase.authentication;
 
 import com.crediya.model.exception.BusinessException;
-import com.crediya.model.exception.TechnicalException;
 import com.crediya.model.exception.message.BusinessErrorMessage;
-import com.crediya.model.exception.message.TechnicalErrorMessage;
 import com.crediya.model.jwtprovider.JwtProvider;
 import com.crediya.model.role.gateways.RoleRepository;
 import com.crediya.model.user.AuthResponse;
@@ -65,12 +63,12 @@ public class AuthenticationUseCase {
                         BusinessErrorMessage.ERROR_LOGIN_USER
                 )))
                 .flatMap(user ->
-                    roleRepository.findById(user.getRoleId()) // or findById(user.getRoleId())
-                        .map(role -> {
-                            user.setRole(role); // enrich user with role
-                            String token = jwtProvider.generateToken(user);
-                            return new AuthResponse(token, user.getEmail(), role.getName());
-                        })
+                        roleRepository.findById(user.getRoleId())
+                                .flatMap(role -> {
+                                    user.setRole(role); // enrich user with role
+                                    return jwtProvider.generateToken(user)
+                                            .map(token -> new AuthResponse(token, user.getEmail(), role.getName()));
+                                })
                 );
     }
 }

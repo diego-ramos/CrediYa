@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Role {
-    private int  id;
+    private Integer  id;
     private String name;
 }

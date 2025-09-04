@@ -1,9 +1,6 @@
 package com.crediya.api.config;
 
-import com.crediya.api.security.CustomAccessDeniedHandler;
-import com.crediya.api.security.CustomAuthenticationEntryPoint;
-import com.crediya.api.security.CustomJwtAuthenticationConverter;
-import com.crediya.api.security.JwtService;
+import com.crediya.api.security.*;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +18,6 @@ import javax.crypto.SecretKey;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
-    private static final String ADMIN_ROLE = "ADMINISTRADOR";
-    private static final String REPRESENTATIVE_ROLE = "ASESOR";
-
     private final JwtService jwtService;
 
     public SecurityConfig(JwtService jwtService) {
@@ -33,7 +27,8 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
                                                          CustomAuthenticationEntryPoint entryPoint,
-                                                         CustomAccessDeniedHandler accessDeniedHandler) {
+                                                         CustomAccessDeniedHandler accessDeniedHandler,
+                                                         CustomAuthorizationManager customAuthorizationManager) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
@@ -41,8 +36,7 @@ public class SecurityConfig {
                         .pathMatchers("/webjars/swagger-ui/*").permitAll()
                         .pathMatchers("/v3/api-docs/*").permitAll()
                         .pathMatchers("/api/v*/usuarios/identification-number/*").authenticated()
-                        .pathMatchers("/api/v*/usuarios/register").hasAnyRole(ADMIN_ROLE, REPRESENTATIVE_ROLE) // ✅ role-based restriction
-                        .anyExchange().authenticated()
+                        .anyExchange().access(customAuthorizationManager) // dynamic DB permissions
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
