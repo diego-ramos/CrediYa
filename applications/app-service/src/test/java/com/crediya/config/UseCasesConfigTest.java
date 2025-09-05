@@ -1,6 +1,10 @@
 package com.crediya.config;
 
+import com.crediya.model.jwtprovider.JwtProvider;
+import com.crediya.model.role.gateways.RoleRepository;
+import com.crediya.model.user.gateways.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +35,21 @@ public class UseCasesConfigTest {
     static class TestConfig {
 
         @Bean
-        public MyUseCase myUseCase() {
-            return new MyUseCase();
+        public UserRepository userRepository() {
+            return Mockito.mock(UserRepository.class);
+
+        }
+
+        @Bean
+        public RoleRepository roleRepository() {
+            return Mockito.mock(RoleRepository.class);
+
+        }
+
+        @Bean
+        public JwtProvider jwtProvider() {
+            return Mockito.mock(JwtProvider.class);
+
         }
     }
 

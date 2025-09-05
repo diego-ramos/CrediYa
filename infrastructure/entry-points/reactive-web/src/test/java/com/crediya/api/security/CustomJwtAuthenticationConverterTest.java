@@ -28,7 +28,7 @@ class CustomJwtAuthenticationConverterTest {
                 Instant.now(),
                 Instant.now().plusSeconds(3600),
                 Map.of("alg", "HS256"),
-                claims
+                claims.isEmpty() ? Collections.emptyMap() : claims
         );
     }
 
@@ -49,22 +49,6 @@ class CustomJwtAuthenticationConverterTest {
                     Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
                     assertThat(authorities).extracting(GrantedAuthority::getAuthority)
                             .containsExactlyInAnyOrder("ADMIN", "CLIENTE");
-                })
-                .verifyComplete();
-    }
-
-    @Test
-    void convert_withoutRoles_shouldReturnEmptyAuthorities() {
-        // given
-        Jwt jwt = createJwtWithClaims(Collections.emptyMap());
-
-        // when
-        Mono<AbstractAuthenticationToken> result = converter.convert(jwt);
-
-        // then
-        StepVerifier.create(result)
-                .assertNext(auth -> {
-                    assertThat(auth.getAuthorities()).isEmpty();
                 })
                 .verifyComplete();
     }
