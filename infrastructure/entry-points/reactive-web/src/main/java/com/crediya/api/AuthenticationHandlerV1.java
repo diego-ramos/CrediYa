@@ -97,6 +97,10 @@ public class AuthenticationHandlerV1 {
     public Mono<ServerResponse> login(ServerRequest serverRequest) {
         return  serverRequest.bodyToMono(LoginRequest.class)
                 .doOnNext(login -> log.info(Constants.LOGIN_REQUEST_RECEIVED, login.email()))
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.warn("No body found in request!");
+                    return Mono.empty();
+                }))
                 .flatMap(dto -> {
                     var violations = validator.validate(dto);
                     if (!violations.isEmpty()) {
