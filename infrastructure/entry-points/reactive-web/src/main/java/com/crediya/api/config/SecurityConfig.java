@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v*/usuarios/login").permitAll()
                         .pathMatchers("/webjars/swagger-ui/*").permitAll()
                         .pathMatchers("/v3/api-docs/*").permitAll()
+                        .pathMatchers("/actuator/health").permitAll()
                         .pathMatchers("/api/v*/usuarios/identification-number/*").authenticated()
                         .anyExchange().access(customAuthorizationManager) // dynamic DB permissions
                 )
