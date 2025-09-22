@@ -9,6 +9,7 @@ import com.crediya.r2dbc.helper.ReactiveAdapterOperations;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -56,5 +57,10 @@ public class UserReactiveRepositoryAdapter  extends ReactiveAdapterOperations<
                 .findFirstByEmailAndPassword(email, password)
                 .map(this::toEntity)
                 .onErrorMap(e -> new TechnicalException(e, TechnicalErrorMessage.USER_ID_FIND));
+    }
+
+    @Override
+    public Flux<String> findAllAdminEmails() {
+        return repository.findAllAdminEmails();
     }
 }

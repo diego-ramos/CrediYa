@@ -16,10 +16,15 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 
 @Slf4j
@@ -121,4 +126,14 @@ public class AuthenticationHandlerV1 {
                                     e -> ServerResponse.status(500).bodyValue(e.getTechnicalErrorMessage().toString()));
                 });
     }
+
+    public Mono<ServerResponse> findAllAdminEmails(ServerRequest serverRequest) {
+        return authenticationUseCase.findAllAdminEmails()
+                .doOnNext(email -> log.info("Admin email: {}", email)) // print each email
+                .collectList() // turn Flux<String> → Mono<List<String>>
+                .flatMap(emails -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(emails)); // return JSON array
+    }
+
 }

@@ -8,6 +8,7 @@ import com.crediya.model.user.AuthResponse;
 import com.crediya.model.user.User;
 import com.crediya.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -70,5 +71,9 @@ public class AuthenticationUseCase {
                                             .map(token -> new AuthResponse(token, user.getEmail(), role.getName()));
                                 })
                 );
+    }
+
+    public Flux<String> findAllAdminEmails(){
+        return userRepository.findAllAdminEmails();
     }
 }

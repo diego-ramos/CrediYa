@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .pathMatchers("/v3/api-docs/*").permitAll()
                         .pathMatchers("/actuator/health").permitAll()
                         .pathMatchers("/api/v*/usuarios/identification-number/*").authenticated()
+                        .pathMatchers("/api/v*/usuarios/get-admins-emails").authenticated()
                         .anyExchange().access(customAuthorizationManager) // dynamic DB permissions
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
